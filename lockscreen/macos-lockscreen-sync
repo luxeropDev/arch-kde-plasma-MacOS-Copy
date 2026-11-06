@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Экран блокировки в стиле macOS для Plasma 6.
+#
+# Начиная с Plasma 6.8 экран блокировки — часть shell-пакета org.kde.plasma.desktop.
+# Скрипт копирует системный пакет в ~/.local/share/plasma/shells и накладывает
+# патч только на экран блокировки. Запускается при входе в систему (до plasmashell)
+# и после обновлений Plasma, поэтому копия всегда совпадает с системной версией.
+# Если патч не подходит к новой версии KDE — копия удаляется и работает
+# стандартный экран блокировки (ничего не ломается).
+#
+#   macos-lockscreen-sync            синхронизировать (если нужно)
+#   macos-lockscreen-sync --force    синхронизировать принудительно
+#   macos-lockscreen-sync --remove   вернуть стандартный экран блокировки
+#   macos-lockscreen-sync --test ID  собрать тестовый пакет с другим id
+set -euo pipefail
+
+SRC=/usr/share/plasma/shells/org.kde.plasma.desktop
+ASSETS="$HOME/.local/share/macos-kde/lockscreen"
+ID=org.kde.plasma.desktop
+FORCE=0
+
+case "${1:-}" in
+    --remove)
+        rm -rf "$HOME/.local/share/plasma/shells/$ID"
+        echo "Стандартный экран блокировки восстановлен"
+        exit 0 ;;
+    --force) FORCE=1 ;;
+    --test)  ID="${2:?укажи id}"; FORCE=1 ;;
+esac
+
+DST="$HOME/.local/share/plasma/shells/$ID"
+STAMP="$DST/.macos-stamp"
+
+[[ -d "$SRC/contents/lockscreen" ]] || { echo "Нет $SRC — пропускаю"; exit 0; }
+
+want=$( { cat "$SRC/metadata.json"; find "$SRC" -type f -printf '%P %s %T@\n' | sort; cat "$ASSETS"/*; } | sha256sum | cut -d' ' -f1)
+if [[ $FORCE -eq 0 && -f "$STAMP" && "$(cat "$STAMP")" == "$want" ]]; then
+    exit 0
+fi
+
+mkdir -p "$HOME/.local/share/plasma/shells"
+tmp=$(mktemp -d "$HOME/.local/share/plasma/shells/.macos-tmp.XXXXXX")
+trap 'rm -rf "$tmp"' EXIT
+cp -a "$SRC/." "$tmp/"
+cp "$ASSETS/MacClock.qml" "$ASSETS/MacTopBar.qml" "$tmp/contents/lockscreen/"
+
+if ! python3 "$ASSETS/patch.py" "$tmp/contents/lockscreen"; then
+    echo "Патч экрана блокировки не подошёл к этой версии Plasma — оставляю стандартный"
+    [[ "$ID" == org.kde.plasma.desktop ]] && rm -rf "$DST"
+    exit 0
+fi
+
+if [[ "$ID" != org.kde.plasma.desktop ]]; then
+    sed -i "s/\"Id\": \"org.kde.plasma.desktop\"/\"Id\": \"$ID\"/" "$tmp/metadata.json"
+fi
+echo "$want" > "$tmp/.macos-stamp"
+
+rm -rf "$DST.old"
+[[ -d "$DST" ]] && mv "$DST" "$DST.old"
+mv "$tmp" "$DST"
+rm -rf "$DST.old"
+trap - EXIT
+echo "Экран блокировки macOS установлен ($ID)"

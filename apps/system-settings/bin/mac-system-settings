@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Запуск «Системных настроек» в стиле macOS. Аргумент — раздел (wifi, bluetooth, appearance, dock, …).
+set -euo pipefail
+[[ $EUID -eq 0 ]] && { echo "Не запускайте от root" >&2; exit 1; }
+ROOT="$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")"
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m macsettings "$@"

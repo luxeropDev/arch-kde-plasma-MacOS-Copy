@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Показывает/скрывает Launchpad (плазмоид org.macos.launchpad). Используется значком в Dock и горячей клавишей.
+id=$(qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
+    'var r=[]; panels().forEach(function(p){ p.widgets().forEach(function(w){ if (w.type=="org.macos.launchpad") r.push(w.id); }); }); print(r[0] || "")' 2>/dev/null)
+[[ -n "$id" ]] || exit 1
+exec qdbus6 org.kde.kglobalaccel /component/plasmashell org.kde.kglobalaccel.Component.invokeShortcut "activate widget $id"

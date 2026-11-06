@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Samsung Ecosystem Hub
+GenericName=Samsung Galaxy
+Comment=Телефон, Galaxy Buds и Galaxy Watch в одном окне
+Comment[en]=Galaxy Phone, Buds and Watch in one window
+Exec=@BIN@ %U
+Icon=samsung-ecosystem-hub
+Terminal=false
+Categories=Utility;
+Keywords=Samsung;Galaxy;Buds;Watch;KDE Connect;scrcpy;
+StartupNotify=true
+StartupWMClass=samsung-ecosystem-hub

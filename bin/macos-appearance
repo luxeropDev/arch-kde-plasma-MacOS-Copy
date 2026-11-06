@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Переключение оформления macOS: светлое / тёмное (как в «Пункте управления»)
+#   macos-appearance dark | light | toggle
+set -uo pipefail
+
+mode="${1:-toggle}"
+if [[ "$mode" == toggle ]]; then
+    case "$(kreadconfig6 --group General --key ColorScheme)" in
+        *Dark*) mode=light ;;
+        *)      mode=dark ;;
+    esac
+fi
+case "$mode" in
+    dark)  V=Dark;  v=dark;  KV=MacTahoeDark ;;
+    light) V=Light; v=light; KV=MacTahoe ;;
+    *) echo "использование: macos-appearance dark|light|toggle"; exit 1 ;;
+esac
+
+plasma-apply-colorscheme "MacTahoe$V" >/dev/null 2>&1
+plasma-apply-desktoptheme "MacTahoe-$V" >/dev/null 2>&1
+
+icons="MacTahoe-$v"; [[ -d "$HOME/.local/share/icons/$icons" || -d "/usr/share/icons/$icons" ]] || icons=MacTahoe
+/usr/lib/plasma-changeicons "$icons" >/dev/null 2>&1
+
+kwriteconfig6 --file "$HOME/.config/Kvantum/kvantum.kvconfig" --group General --key theme "$KV"
+kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key theme "__aurorae__svg__MacTahoe-$V"
+qdbus6 org.kde.KWin /KWin reconfigure >/dev/null 2>&1
+
+gtk=$(ls -1 "$HOME/.themes" 2>/dev/null | grep -xE "MacTahoe-$V" | head -1)
+if [[ -n "$gtk" ]]; then
+    for g in 3.0 4.0; do
+        kwriteconfig6 --file "$HOME/.config/gtk-$g/settings.ini" --group Settings --key gtk-theme-name "$gtk"
+        kwriteconfig6 --file "$HOME/.config/gtk-$g/settings.ini" --group Settings --key gtk-application-prefer-dark-theme "$([[ $v == dark ]] && echo true || echo false)"
+    done
+    gsettings set org.gnome.desktop.interface gtk-theme "$gtk" 2>/dev/null
+fi
+gsettings set org.gnome.desktop.interface color-scheme "prefer-$v" 2>/dev/null
+gsettings set org.gnome.desktop.interface icon-theme "$icons" 2>/dev/null
+exit 0

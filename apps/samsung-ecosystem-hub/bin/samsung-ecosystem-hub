@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Безопасный запуск Samsung Ecosystem Hub: без root, с проверкой зависимостей.
+set -euo pipefail
+
+if [[ $EUID -eq 0 ]]; then
+    echo "Samsung Ecosystem Hub не должен запускаться от root." >&2
+    exit 1
+fi
+
+ROOT="$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")"
+
+if ! python3 -c 'import PySide6.QtQml' 2>/dev/null; then
+    echo "Не найден PySide6. Установите: sudo pacman -S --needed pyside6" >&2
+    exit 2
+fi
+
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+export QT_QUICK_CONTROLS_STYLE=Basic
+exec python3 -m samsung_hub "$@"

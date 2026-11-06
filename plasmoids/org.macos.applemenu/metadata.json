@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "luxeropDev" }],
+        "Category": "Application Launchers",
+        "Description": "Меню Apple в стиле macOS",
+        "Icon": "start-here",
+        "Id": "org.macos.applemenu",
+        "License": "GPL-3.0-or-later",
+        "Name": "Apple Menu",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

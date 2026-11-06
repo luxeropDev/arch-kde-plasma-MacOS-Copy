@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "luxeropDev" }],
+        "Category": "System Information",
+        "Description": "Виджет «Батареи» как в macOS: заряд ноутбука, телефона и наушников",
+        "Icon": "battery-full",
+        "Id": "org.macos.batteries",
+        "License": "GPL-3.0-or-later",
+        "Name": "Батареи",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

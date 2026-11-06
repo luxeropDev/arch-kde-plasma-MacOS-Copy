@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Системные настройки
+Name[en]=System Settings (macOS style)
+Comment=Настройки компьютера в стиле macOS
+Exec=@BIN@ %U
+Icon=preferences-system
+Terminal=false
+Categories=Settings;
+Keywords=settings;preferences;настройки;параметры;
+StartupWMClass=mac-system-settings

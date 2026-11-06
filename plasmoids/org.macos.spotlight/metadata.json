@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "luxeropDev" }],
+        "Category": "Windows and Tasks",
+        "Description": "Кнопка поиска Spotlight (KRunner)",
+        "Icon": "search",
+        "Id": "org.macos.spotlight",
+        "License": "GPL-3.0-or-later",
+        "Name": "Spotlight",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+install.log
+# Фото модели ноутбука не распространяется (права производителя) — добавьте своё
+apps/system-settings/macsettings/ui/images/device.png

@@ -1,0 +1,14 @@
+singleton Theme 1.0 Theme.qml
+Icon 1.0 Icon.qml
+Card 1.0 Card.qml
+ActionButton 1.0 ActionButton.qml
+StatusBadge 1.0 StatusBadge.qml
+BatteryMeter 1.0 BatteryMeter.qml
+DeviceCard 1.0 DeviceCard.qml
+SidebarItem 1.0 SidebarItem.qml
+PageHeader 1.0 PageHeader.qml
+InfoRow 1.0 InfoRow.qml
+Toast 1.0 Toast.qml
+SwitchRow 1.0 SwitchRow.qml
+CheckRow 1.0 CheckRow.qml
+PageBase 1.0 PageBase.qml

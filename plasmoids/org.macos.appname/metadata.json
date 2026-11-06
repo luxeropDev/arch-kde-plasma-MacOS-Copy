@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "luxeropDev" }],
+        "Category": "Windows and Tasks",
+        "Description": "Название активного приложения, как в строке меню macOS",
+        "Icon": "window",
+        "Id": "org.macos.appname",
+        "License": "GPL-3.0-or-later",
+        "Name": "Active App Name",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

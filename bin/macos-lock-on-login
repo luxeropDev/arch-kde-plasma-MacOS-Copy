@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Блокирует сессию сразу после автовхода, чтобы после включения ноутбука показывался
+# экран блокировки в стиле macOS (а не экран входа Plasma Login Manager).
+#
+# Срабатывает только если:
+#   1) в конфиге Plasma Login Manager включён автовход (секция [Autologin] с User=…);
+#   2) система загружена недавно (меньше 5 минут) — ручной вход позже блокироваться не будет.
+# Принудительно: MACOS_LOCK_FORCE=1 macos-lock-on-login
+set -u
+
+autologin_enabled() {
+    cat /etc/plasmalogin.conf /etc/plasmalogin.conf.d/*.conf 2>/dev/null |
+        awk '/^\[/ { sec = tolower($0) } sec == "[autologin]" && /^[[:space:]]*User[[:space:]]*=[[:space:]]*[^[:space:]]/ { found = 1 } END { exit !found }'
+}
+
+if [[ "${MACOS_LOCK_FORCE:-}" != 1 ]]; then
+    autologin_enabled || exit 0
+    uptime_s=$(cut -d. -f1 /proc/uptime)
+    (( uptime_s < 300 )) || exit 0
+fi
+
+# Запускается службой systemd ДО рабочего стола (plasmashell): ждём только KWin,
+# который держит экран блокировки, и сразу блокируем — рабочий стол не мелькает.
+for _ in $(seq 1 60); do
+    qdbus6 org.freedesktop.ScreenSaver /ScreenSaver >/dev/null 2>&1 && break
+    sleep 0.25
+done
+loginctl lock-session
+# даём экрану блокировки появиться, прежде чем systemd запустит рабочий стол
+for _ in $(seq 1 20); do
+    [[ "$(qdbus6 org.freedesktop.ScreenSaver /ScreenSaver org.freedesktop.ScreenSaver.GetActive 2>/dev/null)" == true ]] && break
+    sleep 0.25
+done
+exit 0
